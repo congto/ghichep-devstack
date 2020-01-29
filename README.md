@@ -9,7 +9,7 @@ apt-get update -y && apt-get upgrade -y && apt-get dist-upgrade -y && init 6
 
 - Tạo user stack
 ```sh
-apt-get -y install sudo git
+apt-get -y install sudo git byobu
 
 adduser stack
 
@@ -23,16 +23,20 @@ echo "stack ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 su - stack
 ```
 
-- Tải gói từ devstack về
+Tải gói từ devstack về
 
-```sh
-Tải gói mới nhất: 
+- Tải gói mới nhất: 
 
- git clone https://github.com/openstack-dev/devstack.git
+```
+git clone https://github.com/openstack-dev/devstack.git
+```
 
-Hoặc chỉ định gói:
- git clone -b stable/liberty https://github.com/openstack-dev/devstack.git
+- Tải phiên bản chỉ định
 
+```
+git clone -b stable/liberty https://github.com/openstack-dev/devstack.git
+
+git clone -b stable/train https://github.com/openstack-dev/devstack.git
 ```
 
 ### NEUTRON - Các ghi chép devstack với NEUTRON
