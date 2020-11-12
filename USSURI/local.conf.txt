@@ -1,0 +1,99 @@
+# REF: https://raw.githubusercontent.com/berndbausch/Devstack-Kubernetes/main/local.conf
+###### Huong dan ###########
+# git clone https://opendev.org/openstack/devstack -b stable/ussuri
+# Tao file local.conf nhu ben duoi
+########################################################################################
+
+########################################################################################
+# PUBLIC_INTERFACE, HOST_IP and FLOATING_RANGE in the diagram
+# refer to settings in this local.conf file.
+#
+#     +---------------- Physical host -----------------+
+#     |                                                |
+#     |                                                |
+#     | +------ Devstack server (a KVM VM) ----------+ |
+#     | |                                            | |
+#     | |  +------------+          +------------+    | |
+#     | |  | K8s master |          | K8s worker |    | |
+#     | |  +------\-----+          +------/-----+    | |
+#     | |          \                     /           | |
+#     | |           -----\     /---------            | |
+#     | |                 |   |                      | |
+#     | |               /-------\                    | |
+#     | |               | br-ex |                    | |
+#     | |               \-------/                    | |
+#     | |                   |                        | |
+#     | +------------- Virtual NIC ------------------+ |
+#     |       (PUBLIC_INTERFACE with HOST_IP)          |
+#     |                     |                          |
+#     |              /-------------\                   |
+#     |              | Linuxbridge |                   |
+#     |              \-------------/                   |
+#     |                     |                          |
+#     +-----------------Physical NIC-------------------+
+#                           | 
+#    _____External Network__|__(FLOATING_RANGE)_____
+#
+#
+
+# Replace the text between >> and << with your local configuration.
+
+[[local|localrc]]
+HOST_IP=192.168.90.198
+SERVICE_HOST=$HOST_IP
+MYSQL_HOST=$HOST_IP
+RABBIT_HOST=$HOST_IP
+ADMIN_PASSWORD=Welcome123
+DATABASE_PASSWORD=Welcome123
+RABBIT_PASSWORD=Welcome123
+SERVICE_PASSWORD=Welcome123
+
+## Neutron options
+Q_USE_SECGROUP=True
+
+# The following five settings connect the cloud to the external network.
+
+FLOATING_RANGE=192.168.98.0/24
+# START and END are the first and last IP address of a range that can be used
+# for allocating floating IPs. I.e. this range is not used in your network.
+Q_FLOATING_ALLOCATION_POOL=start=192.168.98.120,end=192.168.98.120
+PUBLIC_NETWORK_GATEWAY=192.168.98.1
+PUBLIC_INTERFACE=eth0
+Q_ASSIGN_GATEWAY_TO_PUBLIC_BRIDGE=FALSE
+
+# End of external network configuration
+
+# Open vSwitch provider networking configuration
+Q_USE_PROVIDERNET_FOR_PUBLIC=True
+OVS_PHYSICAL_BRIDGE=br-ex
+PUBLIC_BRIDGE=br-ex
+OVS_BRIDGE_MAPPINGS=public:br-ex
+
+# Install the Magnum service (K8s cluster manager) and its GUI
+# Magnum requires the Heat service (cloud application orchestration)
+
+enable_plugin heat https://github.com/openstack/heat stable/ussuri
+enable_plugin magnum https://github.com/openstack/magnum stable/ussuri
+enable_plugin magnum-ui https://github.com/openstack/magnum-ui stable/ussuri
+
+# Install the Octavia service (load balancer) and its GUI
+# Barbican (service for storing secrets) is probably optional.
+
+enable_plugin barbican https://opendev.org/openstack/barbican stable/ussuri
+enable_plugin octavia https://opendev.org/openstack/octavia stable/ussuri
+LIBS_FROM_GIT+=python-octaviaclient
+
+ENABLED_SERVICES+=,octavia,o-api,o-cw,o-hm,o-hk,o-da
+
+# End of Octavia
+
+LOGFILE=$DEST/logs/stack.sh.log
+LOGDAYS=14
+LOG_COLOR=False
+
+### TEMPEST ###
+# enable_service tempest
+disable_service tempest
+
+
+IP_VERSION=4
