@@ -1,4 +1,4 @@
-# REF: https://raw.githubusercontent.com/berndbausch/Devstack-Kubernetes/main/local.conf
+### REF: https://raw.githubusercontent.com/berndbausch/Devstack-Kubernetes/main/local.conf
 ###### Huong dan ###########
 # git clone https://opendev.org/openstack/devstack -b stable/ussuri
 # Tao file local.conf nhu ben duoi
@@ -56,7 +56,7 @@ Q_USE_SECGROUP=True
 FLOATING_RANGE=192.168.98.0/24
 # START and END are the first and last IP address of a range that can be used
 # for allocating floating IPs. I.e. this range is not used in your network.
-Q_FLOATING_ALLOCATION_POOL=start=192.168.98.120,end=192.168.98.120
+Q_FLOATING_ALLOCATION_POOL=start=192.168.98.120,end=192.168.98.130
 PUBLIC_NETWORK_GATEWAY=192.168.98.1
 PUBLIC_INTERFACE=eth0
 Q_ASSIGN_GATEWAY_TO_PUBLIC_BRIDGE=FALSE
