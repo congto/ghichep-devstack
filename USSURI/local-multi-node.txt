@@ -1,0 +1,113 @@
+### Chuan bi
+
+git clone https://opendev.org/openstack/devstack -b stable/ussuri
+
+############# CONTROLLER
+
+[[local|localrc]]
+
+MULTI_HOST=true
+# management & api network
+HOST_IP=192.168.98.170
+LOGFILE=/opt/stack/logs/stack.sh.log
+USE_PYTHON3=True
+
+# Credentials
+ADMIN_PASSWORD=admin
+MYSQL_PASSWORD=admin
+RABBIT_PASSWORD=admin
+SERVICE_PASSWORD=admin
+SERVICE_TOKEN=admin
+
+# enable neutron-ml2-vlan
+disable_service n-net
+
+
+VERBOSE=True
+LOG_COLOR=True
+# Pre-requisite
+ENABLED_SERVICES=rabbit,mysql,key
+# Horizon - enable for the OpenStack web GUI
+ENABLED_SERVICES+=,horizon
+# Nova
+ENABLED_SERVICES+=,n-api,n-crt,n-cpu,n-cond,n-sch,n-api-meta,n-sproxy,n-novnc
+ENABLED_SERVICES+=,placement-api,placement-client
+# Glance
+ENABLED_SERVICES+=,g-api,g-reg
+# Neutron
+ENABLED_SERVICES+=,q-svc,q-agt,q-dhcp,q-l3,q-meta,neutron
+
+# Cinder
+ENABLED_SERVICES+=,c-api,c-vol,c-sch,c-bak
+# Tempest
+# enable_service tempest
+disable_service tempest
+
+IP_VERSION=4
+
+Q_AGENT=linuxbridge
+ENABLE_TENANT_VLANS=True
+TENANT_VLAN_RANGE=3001:4000
+PHYSICAL_NETWORK=default
+
+# logging
+LOG_COLOR=True
+LOGDIR=$DEST/logs
+SCREEN_LOGDIR=$LOGDIR/screen
+
+DOWNLOAD_DEFAULT_IMAGES=False
+IMAGE_URLS="https://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img"
+
+
+############# COMPUTE 
+
+[[local|localrc]]
+
+MULTI_HOST=true
+# management & api network
+HOST_IP=192.168.98.175
+
+USE_PYTHON3=True
+VERBOSE=True
+
+# Credentials
+ADMIN_PASSWORD=admin
+MYSQL_PASSWORD=admin
+RABBIT_PASSWORD=admin
+SERVICE_PASSWORD=admin
+SERVICE_TOKEN=admin
+
+# Service information
+SERVICE_HOST=192.168.98.170
+MYSQL_HOST=$SERVICE_HOST
+RABBIT_HOST=$SERVICE_HOST
+GLANCE_HOSTPORT=$SERVICE_HOST:9292
+Q_HOST=$SERVICE_HOST
+KEYSTONE_AUTH_HOST=$SERVICE_HOST
+KEYSTONE_SERVICE_HOST=$SERVICE_HOST
+
+DATABASE_TYPE=mysql
+
+ENABLED_SERVICES=n-cpu,q-agt,neutron,n-api-meta,c-vol,c-bak,placement-client,n-novnc
+
+Q_AGENT=linuxbridge
+ENABLE_TENANT_VLANS=True
+TENANT_VLAN_RANGE=3001:4000
+PHYSICAL_NETWORK=default
+
+# vnc config
+NOVA_VNC_ENABLED=True
+NOVNCPROXY_URL="http://$SERVICE_HOST:6080/vnc_lite.html"
+VNCSERVER_LISTEN=$HOST_IP
+VNCSERVER_PROXYCLIENT_ADDRESS=$VNCSERVER_LISTEN
+
+# Logging
+LOG_COLOR=True
+LOGDIR=$DEST/logs
+SCREEN_LOGDIR=$LOGDIR/screen
+
+# Tempest
+# enable_service tempest
+disable_service tempest
+
+### https://blog.csdn.net/hiro618/article/details/106959590
